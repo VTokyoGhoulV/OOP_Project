@@ -3,7 +3,7 @@ class Product:
     Класс, описывающий товар
     """
 
-    def __init__(self, name, description, price, quantity):
+    def __init__(self, name: str, description: str, price: int, quantity: int):
         self.name: str = name
         self.description: str = description
         self.price: int = price
@@ -15,49 +15,62 @@ class Category:
     Класс, описывающий категорию
     """
 
-    total_categories: int = 0
-    total_products: int = 0
+    category_count: int = 0
+    product_count: int = 0
 
-    def __init__(self, name, description, products):
-        self.name: int = name
+    def __init__(self, name: str, description: str, products: list):
+        self.name: str = name
         self.description: str = description
         self.products: list = products
 
-        Category.total_categories += 1
-        Category.total_products += len(products)
+        Category.category_count += 1
+        Category.product_count += len(products)
 
+    def show_products(self) -> str:
+        """
+        Возвращает информацию по всем продуктам в категории
+        """
 
-    def show_products(self):
-
-        info = ""
-        for product in self.products:
-            info += f"{product.name} - {product.description} - {product.price} - {product.quantity}\n"
-
-        return info
+        return "\n".join(
+            f"{product.name} - {product.description} - {product.price} - {product.quantity}"
+            for product in self.products
+        )
 
 
 class CategoryList:
     """
     Класс, описывающий список категорий
     """
-    def __init__(self):
-        self.categories = list()
 
-    def append(self, category):
+    def __init__(self) -> None:
+        self.categories: list = list()
+
+    def append(self, category: Category) -> None:
+        """
+        Добавляет в список категорий новую категорию
+        """
         self.categories.append(category)
 
-    def remove(self, name):
-        self.categories.remove(self.find_by_name(name))
-
-    def find_by_name(self, name):
+    def find_by_name(self, name: str) -> Category | None:
+        """
+        Возвращает категорию соответствующую получаемому имени категории
+        """
 
         for category in self.categories:
             if category.name == name:
 
-                return category
+                return category  # type: ignore
 
         return None
 
-    def show_all(self):
+    def get_all_categories_names(self) -> list:
+        """
+        Возвращает список имен всех категорий в списке
+        """
+
+        names = list()
+
         for category in self.categories:
-            print(category.name)
+            names.append(category.name)
+
+        return names
