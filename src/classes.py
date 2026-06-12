@@ -43,7 +43,7 @@ class CategoryList:
     """
 
     def __init__(self) -> None:
-        self.categories: list = list()
+        self.categories: list[Category] = list()
 
     def append(self, category: Category) -> None:
         """
@@ -59,7 +59,7 @@ class CategoryList:
         for category in self.categories:
             if category.name == name:
 
-                return category  # type: ignore
+                return category
 
         return None
 

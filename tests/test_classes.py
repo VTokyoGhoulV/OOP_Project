@@ -19,8 +19,8 @@ def test_category_init():
     assert category.name == "Фрукты"
     assert category.description == "Свежие фрукты"
     assert category.products == [apple]
-    assert category.total_categories == 1
-    assert category.total_products == 1
+    assert category.category_count == 1
+    assert category.product_count == 1
 
 
 def test_category_show_products():
