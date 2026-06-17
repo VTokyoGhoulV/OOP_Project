@@ -1,6 +1,6 @@
 import pytest
 
-from src.utils import from_file_to_classes, find_project_root
+from src.utils import find_project_root, from_file_to_classes
 
 
 def test_from_file_to_classes():
@@ -13,7 +13,13 @@ def test_from_file_to_classes():
         category.description
         == "Смартфоны, как средство не только коммуникации, но и получение дополнительных функций для удобства жизни"
     )
-    assert category.products[0].name == "Samsung Galaxy C23 Ultra"
+    product = category.products
+    assert (
+        product == "Samsung Galaxy C23 Ultra, 180000.0 руб. Остаток: 5 шт.\n"
+        "Iphone 15, 210000.0 руб. Остаток: 8 шт.\n"
+        "Xiaomi Redmi Note 11, 31000.0 руб. Остаток: 14 шт.\n"
+    )
+
 
 def test_find_project_root_not_found():
 

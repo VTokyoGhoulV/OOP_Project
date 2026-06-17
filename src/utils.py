@@ -40,6 +40,4 @@ def find_project_root(marker_files: str | tuple = ("pyproject.toml", ".git", "re
             if (parent / marker).exists():
                 return parent
 
-    raise RuntimeError(
-        "Не удалось найти корень проекта. Убедитесь, что один из маркерных файлов присутствует."
-    )
+    raise RuntimeError("Не удалось найти корень проекта. Убедитесь, что один из маркерных файлов присутствует.")
