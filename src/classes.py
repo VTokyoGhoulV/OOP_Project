@@ -1,13 +1,81 @@
+from typing import Any, Dict, Optional
+
+
 class Product:
     """
     Класс, описывающий товар
     """
 
+    __all_products: list = list()
+
     def __init__(self, name: str, description: str, price: int, quantity: int):
         self.name: str = name
         self.description: str = description
-        self.price: int = price
+        self.__price: int = price
         self.quantity: int = quantity
+
+        Product.__all_products.append(self)
+
+    @classmethod
+    def new_product(cls, product_params: Dict[str, Any]) -> Product:
+        """
+        Создает новый продукт или изменяет уже существующий (складывает количество и ставит высшую цену)
+        """
+
+        existing_product: Optional[Product] = None
+
+        for product in Product.__all_products:
+
+            if product.name == product_params["name"]:
+
+                existing_product = product
+                break
+
+        if existing_product:
+
+            existing_product.quantity += product_params["quantity"]
+
+            if product_params["price"] > existing_product.price:
+                existing_product.price = product_params["price"]
+
+            return existing_product
+
+        else:
+
+            return cls(
+                product_params["name"],
+                product_params["description"],
+                product_params["price"],
+                product_params["quantity"],
+            )
+
+    @property
+    def price(self) -> int:
+        """
+        Возвращает цену продукта
+        """
+        return self.__price
+
+    @price.setter
+    def price(self, new_price: int) -> None:
+        """
+        Устанавливает новую цену на товар
+        """
+
+        if new_price <= 0:
+            print("Цена не должна быть нулевая или отрицательная")
+
+        elif new_price < self.__price:
+            user_input = input("Цена ниже существующей, вы уверены что хотите продолжить? Y - Да N - Нет\n>>>").upper()
+
+            if user_input == "Y":
+                self.__price = new_price
+
+            else:
+                print("Операция отменена")
+
+        else:
+            self.__price = new_price
 
 
 class Category:
@@ -21,19 +89,27 @@ class Category:
     def __init__(self, name: str, description: str, products: list):
         self.name: str = name
         self.description: str = description
-        self.products: list = products
+        self.__products: list = products
 
         Category.category_count += 1
         Category.product_count += len(products)
 
-    def show_products(self) -> str:
+    def add_product(self, product: Product) -> None:
         """
-        Возвращает информацию по всем продуктам в категории
+        Добавляет продукт в категорию
         """
 
-        return "\n".join(
-            f"{product.name} - {product.description} - {product.price} - {product.quantity}"
-            for product in self.products
+        self.__products.append(product)
+        Category.product_count += 1
+
+    @property
+    def products(self) -> str:
+        """
+        Возвращает все продукты в категории
+        """
+
+        return "".join(
+            f"{product.name}, {product.price} руб. Остаток: {product.quantity} шт.\n" for product in self.__products
         )
 
 
