@@ -195,7 +195,7 @@ def test_category_str(capsys):
     print(category)
     captured = capsys.readouterr().out
 
-    assert captured == "Фрукты, 1 шт.\n"
+    assert captured == "Фрукты, 100 шт.\n"
 
 
 # тесты для класса CategoryList

@@ -101,7 +101,8 @@ class Category:
         Category.product_count += len(products)
 
     def __str__(self) -> str:
-        return f"{self.name}, {len(self.__products)} шт."
+        total_products = sum(product.quantity for product in self.__products)
+        return f"{self.name}, {total_products} шт."
 
     def add_product(self, product: Product) -> None:
         """
