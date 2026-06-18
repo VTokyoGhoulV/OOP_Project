@@ -16,6 +16,12 @@ class Product:
 
         Product.__all_products.append(self)
 
+    def __str__(self) -> str:
+        return f"{self.name}, {self.price} руб. Остаток: {self.quantity} шт."
+
+    def __add__(self, other: Product) -> int:
+        return (self.__price * self.quantity) + (other.__price * other.quantity)
+
     @classmethod
     def new_product(cls, product_params: Dict[str, Any]) -> Product:
         """
@@ -94,6 +100,9 @@ class Category:
         Category.category_count += 1
         Category.product_count += len(products)
 
+    def __str__(self) -> str:
+        return f"{self.name}, {len(self.__products)} шт."
+
     def add_product(self, product: Product) -> None:
         """
         Добавляет продукт в категорию
@@ -111,6 +120,10 @@ class Category:
         return "".join(
             f"{product.name}, {product.price} руб. Остаток: {product.quantity} шт.\n" for product in self.__products
         )
+
+    @property
+    def products_list(self) -> list[Product]:
+        return self.__products
 
 
 class CategoryList:
@@ -150,3 +163,25 @@ class CategoryList:
             names.append(category.name)
 
         return names
+
+
+class GetProduct:
+    """
+    Класс, позволяющий перебрать все товары в категории
+    """
+
+    def __init__(self, category: Category) -> None:
+        self.category = category
+        self.index: int = 0
+
+    def __iter__(self) -> GetProduct:
+        self.index = 0
+        return self
+
+    def __next__(self) -> str:
+        if self.index < len(self.category.products_list):
+            product = self.category.products_list[self.index]
+            self.index += 1
+            return f"{str(product)}\n"
+        else:
+            raise StopIteration
