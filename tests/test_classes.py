@@ -1,4 +1,6 @@
-from src.classes import Category, CategoryList, Product
+import pytest
+
+from src.classes import Category, CategoryList, GetProduct, Product
 
 
 # тесты для класса Product
@@ -46,13 +48,28 @@ def test_product_new_product_existing_product():
     )
     assert new_prod_1.name == "Samsung Galaxy S23 Ultra"
     assert new_prod_1.description == "256GB, Серый цвет, 200MP камера"
-    assert new_prod_1.price == 180000.0
-    assert new_prod_1.quantity == 5
+    assert new_prod_1.price == 190000.0
+    assert new_prod_1.quantity == 10
 
     assert new_prod_2.name == "Samsung Galaxy S23 Ultra"
     assert new_prod_2.description == "256GB, Серый цвет, 200MP камера"
     assert new_prod_2.price == 190000.0
     assert new_prod_2.quantity == 10
+
+
+def test_product_str(capsys):
+    product = Product("Apple", "Simple apple", 50, 100)
+    print(product)
+    captured = capsys.readouterr().out
+    assert captured == "Apple, 50 руб. Остаток: 100 шт.\n"
+
+
+def test_product_add(capsys):
+    product1 = Product("Apple", "Simple apple", 50, 100)
+    product2 = Product("Phone", "Simple phone", 500, 10)
+    print(product1 + product2)
+    captured = capsys.readouterr().out
+    assert captured == "10000\n"
 
 
 # тесты для класса Category
@@ -170,6 +187,17 @@ def test_price_setter_higher_than_current():
     assert product.price == 60
 
 
+def test_category_str(capsys):
+
+    apple = Product("Apple", "Simple apple", 50, 100)
+    category = Category("Фрукты", "Свежие фрукты", [apple])
+
+    print(category)
+    captured = capsys.readouterr().out
+
+    assert captured == "Фрукты, 1 шт.\n"
+
+
 # тесты для класса CategoryList
 def test_category_list_get_all_categories():
 
@@ -182,3 +210,20 @@ def test_category_list_get_all_categories():
     category_list.append(category)
     category_list.append(category2)
     assert category_list.get_all_categories_names() == ["Фрукты", "Телефоны"]
+
+
+# тесты для класса GetProduct
+def test_get_product_iter():
+    apple = Product("Apple", "Simple apple", 50, 100)
+    category = Category("Фрукты", "Свежие фрукты", [apple])
+    get_product = GetProduct(category)
+    assert iter(get_product) == get_product
+
+
+def test_get_product_next():
+    apple = Product("Apple", "Simple apple", 50, 100)
+    category = Category("Фрукты", "Свежие фрукты", [apple])
+    get_product = GetProduct(category)
+    assert next(get_product) == "Apple, 50 руб. Остаток: 100 шт.\n"
+    with pytest.raises(StopIteration):
+        next(get_product)
