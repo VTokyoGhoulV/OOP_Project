@@ -1,6 +1,6 @@
 import pytest
 
-from src.classes import Category, CategoryList, GetProduct, Product, Smartphone, LawnGrass
+from src.classes import Category, CategoryList, GetProduct, LawnGrass, Product, Smartphone
 
 
 class TestProduct:
