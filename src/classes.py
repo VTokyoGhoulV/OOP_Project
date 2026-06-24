@@ -30,7 +30,7 @@ class InitMixin:
     наследован и с какими параметрами был создан объект
     """
 
-    def __init__(self, *args):
+    def __init__(self, *args: Any):
         print(f"{self.__class__.__name__}{args}")
 
 
@@ -43,7 +43,7 @@ class Product(BaseProduct, InitMixin):
 
     def __init__(self, name: str, description: str, price: float | int, quantity: int):
         super().__init__(name, description, price, quantity)  # <--- ВЫЗОВ конструктора BaseProduct
-        
+
         InitMixin.__init__(self, name, description, price, quantity)
 
         Product._all_products.append(self)

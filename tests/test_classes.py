@@ -1,6 +1,6 @@
 import pytest
 
-from src.classes import Category, CategoryList, GetProduct, LawnGrass, Product, Smartphone, BaseProduct, Order
+from src.classes import BaseProduct, Category, CategoryList, GetProduct, LawnGrass, Order, Product, Smartphone
 
 
 class TestProduct:
@@ -263,10 +263,10 @@ class TestBaseProduct:
         product = Product("Test", "Description", 100, 10)
 
         # Проверяем, что у продукта есть все необходимые атрибуты
-        assert hasattr(product, 'name')
-        assert hasattr(product, 'description')
-        assert hasattr(product, 'price')
-        assert hasattr(product, 'quantity')
+        assert hasattr(product, "name")
+        assert hasattr(product, "description")
+        assert hasattr(product, "price")
+        assert hasattr(product, "quantity")
 
         assert isinstance(product.name, str)
         assert isinstance(product.description, str)
@@ -295,11 +295,12 @@ class TestOrder:
         with pytest.raises(ValueError):
             Order(product1, 15)
 
-
     def test_order_str(self, capsys):
         product1 = Product("Test", "Description", 100, 10)
         order = Order(product1, 5)
         print(order)
         captured = capsys.readouterr().out
-        assert captured == (f"Product('Test', 'Description', 100, 10)\n"
-                            f"Заказ: {product1.name}, {order.quantity} шт., Итого: {order.total_price} руб.\n")
+        assert captured == (
+            f"Product('Test', 'Description', 100, 10)\n"
+            f"Заказ: {product1.name}, {order.quantity} шт., Итого: {order.total_price} руб.\n"
+        )
