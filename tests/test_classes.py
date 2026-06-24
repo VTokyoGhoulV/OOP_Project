@@ -1,6 +1,13 @@
 import pytest
 
-from src.classes import BaseProduct, Category, CategoryList, GetProduct, LawnGrass, Order, Product, Smartphone
+from src.classes import (
+    Category,
+    CategoryList,
+    GetProduct,
+    LawnGrass,
+    Product,
+    Smartphone,
+)
 
 
 class TestProduct:
@@ -130,7 +137,10 @@ class TestCategory:
 
         category.add_product(Product("Phone", "Simple phone", 500, 10))
 
-        assert category.products == "Apple, 50 руб. Остаток: 100 шт.\nPhone, 500 руб. Остаток: 10 шт.\n"
+        assert (
+            category.products
+            == "Apple, 50 руб. Остаток: 100 шт.\nPhone, 500 руб. Остаток: 10 шт.\n"
+        )
 
     def test_category_add_product_not_product(self, capsys):
         apple = Product("Apple", "Simple apple", 50, 100)

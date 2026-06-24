@@ -106,8 +106,10 @@ class Product(BaseProduct, InitMixin):
         if new_price <= 0:
             print("Цена не должна быть нулевая или отрицательная")
 
-        elif new_price < self._price:
-            user_input = input("Цена ниже существующей, вы уверены что хотите продолжить? Y - Да N - Нет\n>>>").upper()
+        elif new_price < self.__price:
+            user_input = input(
+                "Цена ниже существующей, вы уверены что хотите продолжить? Y - Да N - Нет\n>>>"
+            ).upper()
 
             if user_input == "Y":
                 self._price = new_price
@@ -152,7 +154,8 @@ class Category(BaseOrderCategory):
         """
 
         return "".join(
-            f"{product.name}, {product.price} руб. Остаток: {product.quantity} шт.\n" for product in self.__products
+            f"{product.name}, {product.price} руб. Остаток: {product.quantity} шт.\n"
+            for product in self.__products
         )
 
     @property
