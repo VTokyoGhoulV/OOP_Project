@@ -1,6 +1,6 @@
 import pytest
 
-from src.classes import Category, CategoryList, GetProduct, LawnGrass, Product, Smartphone
+from src.classes import Category, CategoryList, GetProduct, LawnGrass, Product, Smartphone, BaseProduct, Order
 
 
 class TestProduct:
@@ -58,14 +58,16 @@ class TestProduct:
         product = Product("Apple", "Simple apple", 50, 100)
         print(product)
         captured = capsys.readouterr().out
-        assert captured == "Apple, 50 руб. Остаток: 100 шт.\n"
+        assert captured == "Product('Apple', 'Simple apple', 50, 100)\nApple, 50 руб. Остаток: 100 шт.\n"
 
     def test_product_add(self, capsys):
         product1 = Product("Apple", "Simple apple", 50, 100)
         product2 = Product("Phone", "Simple phone", 500, 10)
         print(product1 + product2)
         captured = capsys.readouterr().out
-        assert captured == "10000\n"
+        assert (
+            captured == "Product('Apple', 'Simple apple', 50, 100)\nProduct('Phone', 'Simple phone', 500, 10)\n10000\n"
+        )
 
     def test_product_add_wrong_type(self, capsys):
         product = Product("Apple", "Simple apple", 50, 100)
@@ -148,13 +150,17 @@ class TestCategory:
     def test_price_setter_negative(self, capsys):
         product = Product("Apple", "Simple apple", 50, 100)
         product.price = -100
-        assert capsys.readouterr().out == "Цена не должна быть нулевая или отрицательная\n"
+        assert capsys.readouterr().out == (
+            "Product('Apple', 'Simple apple', 50, 100)\n" "Цена не должна быть нулевая или отрицательная\n"
+        )
         assert product.price == 50
 
     def test_price_setter_zero(self, capsys):
         product = Product("Apple", "Simple apple", 50, 100)
         product.price = 0
-        assert capsys.readouterr().out == "Цена не должна быть нулевая или отрицательная\n"
+        assert capsys.readouterr().out == (
+            "Product('Apple', 'Simple apple', 50, 100)\n" "Цена не должна быть нулевая или отрицательная\n"
+        )
         assert product.price == 50
 
     def test_price_setter_lower_than_current_yes(self, monkeypatch):
@@ -189,7 +195,7 @@ class TestCategory:
         print(category)
         captured = capsys.readouterr().out
 
-        assert captured == "Фрукты, 100 шт.\n"
+        assert captured == "Product('Apple', 'Simple apple', 50, 100)\nФрукты, 100 шт.\n"
 
 
 class TestCategoryList:
@@ -237,3 +243,63 @@ class TestLawnGrass:
         assert grass.country == "Russia"
         assert grass.germination_period == 10
         assert grass.color == "Green"
+
+
+class TestBaseProduct:
+    """Тесты для абстрактного класса BaseProduct"""
+
+    def test_base_product_abstract_methods(self):
+        """Проверка, что BaseProduct требует реализации __init__"""
+        # Попытка создать экземпляр абстрактного класса должна вызвать ошибку
+        with pytest.raises(TypeError):
+            BaseProduct("Test", "Description", 100, 10)
+
+    def test_product_inherits_base_product(self):
+        """Проверка, что Product наследует BaseProduct"""
+        assert issubclass(Product, BaseProduct)
+
+    def test_product_implements_abstract_methods(self):
+        """Проверка, что Product реализует все абстрактные методы"""
+        product = Product("Test", "Description", 100, 10)
+
+        # Проверяем, что у продукта есть все необходимые атрибуты
+        assert hasattr(product, 'name')
+        assert hasattr(product, 'description')
+        assert hasattr(product, 'price')
+        assert hasattr(product, 'quantity')
+
+        assert isinstance(product.name, str)
+        assert isinstance(product.description, str)
+        assert isinstance(product.price, (float, int))
+        assert isinstance(product.quantity, int)
+
+
+class TestOrder:
+    """Тесты для класса Order"""
+
+    def test_order_init(self):
+        """Тест инициализации класса Order"""
+        product1 = Product("Test", "Description", 100, 10)
+        order = Order(product1, 5)
+        assert order.product == product1
+        assert order.quantity == 5
+        assert order.total_price == 500
+
+    def test_order_init_with_invalid_quantity(self):
+        """Тест инициализации класса Order с некорректным количеством товара"""
+        product1 = Product("Test", "Description", 100, 10)
+        with pytest.raises(ValueError):
+            Order(product1, -5)
+        with pytest.raises(ValueError):
+            Order(product1, 0)
+        with pytest.raises(ValueError):
+            Order(product1, 15)
+
+
+    def test_order_str(self, capsys):
+        product1 = Product("Test", "Description", 100, 10)
+        order = Order(product1, 5)
+        print(order)
+        captured = capsys.readouterr().out
+        assert captured == (f"Product('Test', 'Description', 100, 10)\n"
+                            f"Заказ: {product1.name}, {order.quantity} шт., Итого: {order.total_price} руб.\n")
