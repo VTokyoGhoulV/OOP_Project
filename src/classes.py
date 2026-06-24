@@ -8,10 +8,10 @@ class Product:
 
     __all_products: list = list()
 
-    def __init__(self, name: str, description: str, price: int, quantity: int):
+    def __init__(self, name: str, description: str, price: float | int, quantity: int):
         self.name: str = name
         self.description: str = description
-        self.__price: int = price
+        self.__price: float | int = price
         self.quantity: int = quantity
 
         Product.__all_products.append(self)
@@ -19,8 +19,11 @@ class Product:
     def __str__(self) -> str:
         return f"{self.name}, {self.price} руб. Остаток: {self.quantity} шт."
 
-    def __add__(self, other: Product) -> int:
-        return (self.__price * self.quantity) + (other.__price * other.quantity)
+    def __add__(self, other: Product) -> float | int:
+        if isinstance(other, type(self)):
+            return (self.__price * self.quantity) + (other.__price * other.quantity)
+        else:
+            raise TypeError
 
     @classmethod
     def new_product(cls, product_params: Dict[str, Any]) -> Product:
@@ -56,14 +59,14 @@ class Product:
             )
 
     @property
-    def price(self) -> int:
+    def price(self) -> float | int:
         """
         Возвращает цену продукта
         """
         return self.__price
 
     @price.setter
-    def price(self, new_price: int) -> None:
+    def price(self, new_price: float | int) -> None:
         """
         Устанавливает новую цену на товар
         """
@@ -108,9 +111,11 @@ class Category:
         """
         Добавляет продукт в категорию
         """
-
-        self.__products.append(product)
-        Category.product_count += 1
+        if isinstance(product, Product):
+            self.__products.append(product)
+            Category.product_count += 1
+        else:
+            raise TypeError
 
     @property
     def products(self) -> str:
@@ -186,3 +191,47 @@ class GetProduct:
             return f"{str(product)}\n"
         else:
             raise StopIteration
+
+
+class Smartphone(Product):
+    """
+    Класс, описывающий смартфон
+    """
+
+    def __init__(
+        self,
+        name: str,
+        description: str,
+        price: float | int,
+        quantity: int,
+        efficiency: int,
+        model: str,
+        memory: int,
+        color: str,
+    ):
+        super().__init__(name, description, price, quantity)
+        self.efficiency = efficiency
+        self.model = model
+        self.memory = memory
+        self.color = color
+
+
+class LawnGrass(Product):
+    """
+    Класс, описывающий газон
+    """
+
+    def __init__(
+        self,
+        name: str,
+        description: str,
+        price: float | int,
+        quantity: int,
+        country: str,
+        germination_period: int,
+        color: str,
+    ):
+        super().__init__(name, description, price, quantity)
+        self.country = country
+        self.germination_period = germination_period
+        self.color = color
