@@ -24,6 +24,17 @@ class BaseOrderCategory(ABC):
         self.description = description
 
 
+class ZeroQuantityError(Exception):
+    """Исключение, выбрасываемое при попытке добавить товар с нулевым количеством."""
+
+    def __init__(self, message: str = "Товар с нулевым количеством не может быть добавлен"):
+        """
+        Инициализация исключения.
+        """
+
+        super().__init__(message)
+
+
 class InitMixin:
     """
     Миксин, выводящий информацию о том, от какого класса
@@ -42,7 +53,11 @@ class Product(BaseProduct, InitMixin):
     _all_products: list = list()
 
     def __init__(self, name: str, description: str, price: float | int, quantity: int):
-        super().__init__(name, description, price, quantity)  # <--- ВЫЗОВ конструктора BaseProduct
+
+        if quantity <= 0:
+            raise ZeroQuantityError("Товар с нулевым количеством не может быть добавлен")
+
+        super().__init__(name, description, price, quantity)
 
         InitMixin.__init__(self, name, description, price, quantity)
 
@@ -106,10 +121,8 @@ class Product(BaseProduct, InitMixin):
         if new_price <= 0:
             print("Цена не должна быть нулевая или отрицательная")
 
-        elif new_price < self.__price:
-            user_input = input(
-                "Цена ниже существующей, вы уверены что хотите продолжить? Y - Да N - Нет\n>>>"
-            ).upper()
+        elif new_price < self._price:
+            user_input = input("Цена ниже существующей, вы уверены что хотите продолжить? Y - Да N - Нет\n>>>").upper()
 
             if user_input == "Y":
                 self._price = new_price
@@ -154,13 +167,25 @@ class Category(BaseOrderCategory):
         """
 
         return "".join(
-            f"{product.name}, {product.price} руб. Остаток: {product.quantity} шт.\n"
-            for product in self.__products
+            f"{product.name}, {product.price} руб. Остаток: {product.quantity} шт.\n" for product in self.__products
         )
 
     @property
     def products_list(self) -> list[Product]:
         return self.__products
+
+    def middle_price(self) -> float | int:
+        try:
+
+            total_price = 0
+
+            for prod in self.__products:
+                total_price += prod.price
+
+            return total_price / len(self.__products)
+
+        except ZeroDivisionError:
+            return 0
 
 
 class Order(BaseOrderCategory):

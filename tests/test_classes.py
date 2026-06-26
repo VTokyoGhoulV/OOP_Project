@@ -1,13 +1,7 @@
 import pytest
 
-from src.classes import (
-    Category,
-    CategoryList,
-    GetProduct,
-    LawnGrass,
-    Product,
-    Smartphone,
-)
+from src.classes import (BaseProduct, Category, CategoryList, GetProduct, LawnGrass, Order, Product, Smartphone,
+                         ZeroQuantityError)
 
 
 class TestProduct:
@@ -81,6 +75,10 @@ class TestProduct:
         with pytest.raises(TypeError):
             print(product + "Phone")  # type: ignore
 
+    def test_product_zero_quantity(self):
+        with pytest.raises(ZeroQuantityError):
+            product = Product("Apple", "Simple apple", 50, 0)
+
 
 class TestCategory:
     def test_category_init(self):
@@ -137,10 +135,7 @@ class TestCategory:
 
         category.add_product(Product("Phone", "Simple phone", 500, 10))
 
-        assert (
-            category.products
-            == "Apple, 50 руб. Остаток: 100 шт.\nPhone, 500 руб. Остаток: 10 шт.\n"
-        )
+        assert category.products == "Apple, 50 руб. Остаток: 100 шт.\nPhone, 500 руб. Остаток: 10 шт.\n"
 
     def test_category_add_product_not_product(self, capsys):
         apple = Product("Apple", "Simple apple", 50, 100)
@@ -206,6 +201,17 @@ class TestCategory:
         captured = capsys.readouterr().out
 
         assert captured == "Product('Apple', 'Simple apple', 50, 100)\nФрукты, 100 шт.\n"
+
+    def test_category_middle_price(self):
+        product1 = Product("Apple", "Simple apple", 50, 100)
+        product2 = Product("Phone", "Simple phone", 500, 10)
+        category = Category("Фрукты", "Свежие фрукты", [product1, product2])
+        assert Category.middle_price(category) == 275
+
+
+    def test_category_middle_price_no_products(self):
+        category = Category("Фрукты", "Свежие фрукты", [])
+        assert Category.middle_price(category) == 0
 
 
 class TestCategoryList:
